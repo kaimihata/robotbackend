@@ -2,16 +2,16 @@
 triggered by changes in the database*/
 
 function RobotBackend(robotId, scale) {
-  
   RobotBackend.robotId = robotId;
   
   RobotBackend.belly = null;
   RobotBackend.sound = null;
   RobotBackend.face = null;
 
+  // Loading from Users now instead
   RobotBackend.initializeAPI = function() {
     var dbRefAPI = firebase.database().ref(
-      '/robots/' + RobotBackend.robotId + '/customAPI/');
+      '/users/' + Database.uid + '/robot/customAPI/');
     dbRefAPI.on("value", RobotBackend.updateRobotAPI);
   }
 
@@ -20,11 +20,11 @@ function RobotBackend(robotId, scale) {
     RobotBackend.sound = new Sound();
     
     var dbRefState = firebase.database().ref(
-      '/robots/' + RobotBackend.robotId + '/state/');
+      '/users/' + Database.uid + '/robot/state/');
     dbRefState.on("value", Face.updateRobotFace);
     
     var dbRefActions = firebase.database().ref(
-      '/robots/' + RobotBackend.robotId + '/actions/');
+      '/users/' + Database.uid + '/robot/actions/');
     dbRefActions.on("value", RobotBackend.speakReceived);
     dbRefActions.on("value", RobotBackend.soundReceived);
   }
@@ -33,17 +33,17 @@ function RobotBackend(robotId, scale) {
     RobotBackend.belly = new Belly(robotId, scale);
     
     var dbRefState = firebase.database().ref(
-      '/robots/' + RobotBackend.robotId + '/state/');
+      '/users/' + Database.uid + '/robot/state/');
     dbRefState.on("value", Belly.updateRobotBelly);
     
     var dbRefAPI = firebase.database().ref(
-      '/robots/' + RobotBackend.robotId + '/customAPI/');
+      '/users/' + Database.uid + '/robot/customAPI/');
     dbRefAPI.on("value", Belly.updateRobotBelly);
   }
   
   RobotBackend.resetRobotAction = function(actionName, updates) {
     var dbRef = firebase.database().ref(
-      "/robots/" + RobotBackend.robotId + "/actions/" + actionName + "/");
+      "/users/" + Database.uid + "/robot/actions/" + actionName + "/");
     dbRef.update(updates);
   }
 
@@ -98,6 +98,8 @@ function RobotBackend(robotId, scale) {
       Belly.bellyScreens = apiData.inputs.bellyScreens;
 
     if (RobotBackend.face != null)
+      console.log('apiData');
+      console.log(apiData);
       Face.faces = apiData.states.faces;
 
     if (RobotBackend.sound != null) {
